@@ -31,7 +31,7 @@ class ISetupForm(form.Schema):
     qr_code = TextLine(
         title=_(u'1. Scan this QR code with the Google Authenticator app'),
         description=u'This description is replaced with the QR code.',
-        required=False
+        required=False,
     )
     token = TextLine(
         title=_(u'2. Enter the verification code to activate two-step verification '),
@@ -107,6 +107,11 @@ class SetupForm(form.SchemaForm):
                 barcode_field.field.description = _(get_token_description())
 
             return super(SetupForm, self).updateFields(*args, **kwargs)
+
+    def updateWidgets(self, *args, **kwargs):
+        super(SetupForm, self).updateWidgets(*args, **kwargs)
+        if "qr_code" in self.widgets:
+            self.widgets["qr_code"].mode = "display"
 
 # View for the ``SetupForm``.
 SetupFormView = wrap_form(SetupForm)

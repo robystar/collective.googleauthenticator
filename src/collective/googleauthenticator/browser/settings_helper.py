@@ -33,10 +33,9 @@ class SettingsHelper(BrowserView):
         """
         if api.user.is_anonymous():
             return False  # don't show action to anonymous users
-
         user = api.user.get_current()
         return (
-            is_two_factor_authentication_globally_enabled() and
+            # is_two_factor_authentication_globally_enabled() and
             not has_enabled_two_factor_authentication(user)
         )
 
@@ -53,9 +52,8 @@ class SettingsHelper(BrowserView):
         """
         if api.user.is_anonymous():
             return False  # don't show action to anonymous users
-
         user = api.user.get_current()
         return (
-            is_two_factor_authentication_globally_enabled() and
+            # is_two_factor_authentication_globally_enabled() and
             has_enabled_two_factor_authentication(user)
         )

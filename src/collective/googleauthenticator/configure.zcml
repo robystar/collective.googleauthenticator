@@ -51,6 +51,16 @@
         provides=".adapter.ICameFrom"
         factory=".adapter.CameFromAdapter" />
 
+ <adapter
+      factory=".userdataschema.UserDataPanelExtender"
+      provides="plone.z3cform.fieldsets.interfaces.IFormExtender" />
+
+  <adapter
+      provides=".userdataschema.IEnhancedUserDataSchema"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      factory=".userdataschema.EnhancedUserDataSchemaAdapter"
+      />
+            
     <!-- -*- Event fired on user creation -*- -->
     <subscriber
        for="Products.PluggableAuthService.interfaces.authservice.IBasicUser
