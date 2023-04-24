@@ -150,7 +150,9 @@ class ResetBarCodeForm(form.SchemaForm):
 
             # If all goes well, regenerate the token (overwrite_secret=True) and show the bar code image.
             if barcode_field:
-                if user_data_validation_result.result and bar_code_reset_token == token:
+                #if user_data_validation_result.result and bar_code_reset_token == token:
+
+                if bar_code_reset_token == token:                    
                     barcode_field.field.description = _(get_token_description(user=user, overwrite_secret=False))
                 else:
                     if not user_data_validation_result.result:
