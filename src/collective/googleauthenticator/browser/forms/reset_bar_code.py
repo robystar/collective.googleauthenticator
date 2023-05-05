@@ -168,6 +168,11 @@ class ResetBarCodeForm(form.SchemaForm):
 
         return super(ResetBarCodeForm, self).updateFields(*args, **kwargs)
 
+    def updateWidgets(self, *args, **kwargs):
+        super(ResetBarCodeForm, self).updateWidgets(*args, **kwargs)
+        if "qr_code" in self.widgets:
+            self.widgets["qr_code"].mode = "display"
+
 
 # View for the ``ResetBarCodeForm``.
 ResetBarCodeFormView = wrap_form(ResetBarCodeForm)
