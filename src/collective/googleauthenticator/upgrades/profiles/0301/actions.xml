@@ -5,7 +5,7 @@
  <object name="user" meta_type="CMF Action Category">
 
   <object name="enable_two_factor_authentication" meta_type="CMF Action" i18n:domain="collective.googleauthenticator" insert-before="logout">
-   <property name="title" i18n:translate="">Enable two-step verification</property>
+   <property name="title" i18n:translate="">Abilita autenticazione a doppio fattore</property>
    <property name="description" i18n:translate=""></property>
    <property
       name="url_expr">string:${globals_view/navigationRootUrl}/@@setup-two-factor-authentication</property>
@@ -18,7 +18,7 @@
   </object>
 
   <object name="disable_two_factor_authentication" meta_type="CMF Action" i18n:domain="collective.googleauthenticator" insert-before="logout">
-   <property name="title" i18n:translate="">Disable two-step verification</property>
+   <property name="title" i18n:translate="">Disabilita autenticazione a doppio fattore</property>
    <property name="description" i18n:translate=""></property>
    <property
       name="url_expr">string:${globals_view/navigationRootUrl}/@@disable-two-factor-authentication</property>

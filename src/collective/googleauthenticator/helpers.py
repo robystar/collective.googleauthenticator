@@ -87,8 +87,11 @@ def get_domain_name(request=None):
     if request is None:
         request = getRequest()
 
-    parsed_uri = urlparse(request.base)
-    return parsed_uri.netloc
+    parsed_url = urlparse(request.SERVER_URL)
+    return parsed_url.netloc
+
+    #parsed_uri = urlparse(request.base)
+    #return parsed_uri.netloc
 
 
 def generate_secret(user):

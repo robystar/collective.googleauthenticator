@@ -68,9 +68,9 @@ class GoogleAuthenticatorSettingsEditForm(RegistryEditForm):
         res = super(GoogleAuthenticatorSettingsEditForm, self).render(*args, **kwargs)
         additional = self.additional_template(
             enable_url = '{0}/{1}'.format(self.context.absolute_url(), '@@google-authenticator-enable-for-all-users'),
-            enable_text = _("Enable two-step verification for all users"),
+            enable_text = _(u"Enable two-step verification for all users"),
             disable_url = '{0}/{1}'.format(self.context.absolute_url(), '@@google-authenticator-disable-for-all-users'),
-            disable_text = _("Disable two-step verification for all users"),
+            disable_text = _(u"Disable two-step verification for all users"),
             charset = 'utf-8',
             )
         return res + additional

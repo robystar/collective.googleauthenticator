@@ -56,7 +56,7 @@ class IEnhancedUserDataSchema(model.Schema):
     """
 
     enable_two_factor_authentication = Bool(
-        title=_('Enable two-step verification.'),
+        title=_(u'''Abilita l'autenticazione a doppio fattore.'''),
         description=_("""<strong>Enable two-step verification.</strong><br>Enable/disable the two-step verification. Click <a href=\"@@setup-two-factor-authentication\"> """
                       """here</a> to set it up or <a href=\"@@disable-two-factor-authentication\">here</a> to """
                       """disable it."""
