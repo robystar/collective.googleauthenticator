@@ -5,9 +5,7 @@
                   member python:options['member'];"
 >From: "<span tal:replace="python:here.email_from_name" />" <span tal:replace="structure lt"/><span tal:replace="python:here.email_from_address" /><span tal:replace="structure gt"/>
 To: <span tal:replace="python:member.getProperty('email')" />
-Subject: <span i18n:domain="collective.googleauthenticator" i18n:translate="" tal:omit-tag="">Request to reset the Google Authenticator bar-code</span>
-Content-Type: text/plain; charset=<span tal:replace="python:options['charset']" />
-Dear <span tal:replace="member/getUserName" />:
-You have requested to reset your Google Authenticator bar code.
-Click <a tal:attributes="href url">here</a> to reset your bar-code.
+Subject: Richiesta di creazione/ripristino del codice di Google Authenticator per l'utente <span tal:replace="member/getUserName" />
+Content-Type: text/html; charset=utf-8
+Per la creazione o il ripristino del codice di Google Authenticator vai a questa pagina <a tal:attributes="href url" tal:content="url">pagina</a>.
 </tal:root>
