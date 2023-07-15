@@ -139,8 +139,8 @@ class TokenForm(form.SchemaForm):
         if token_field:
             token_field.field.description = _(
                 u'''Inserisci il codice di verifica generato dall' applicazione, '''
-                u'in caso di smarrimento o primo accesso puoi richiedere il nuovo codice a '
-                u'<a href=\"{0}/@@request-bar-code-reset\">questa pagina</a>.'.format(
+                u'in caso di smarrimento o primo accesso puoi richiedere il nuovo codice al link '
+                u'<a href=\"{0}/@@request-bar-code-reset\">inviami il QR code</a>.'.format(
                     self.context.absolute_url())
             )
 
