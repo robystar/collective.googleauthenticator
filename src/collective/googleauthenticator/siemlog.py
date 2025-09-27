@@ -79,23 +79,28 @@ if not _logger.handlers:
 # ==========================================================
 
 
-def send_login_event(tipo_evento, request):
+def send_login_event(tipo_evento, userid, request, message='-'):
     """
     Invia un evento RFC 5424 (UDP/514) con gli attributi MINIMI richiesti:
       - timestamp
       - tipo_evento ("LOGIN" o "LOGIN_FAILED")
       - indirizzo_sorgente (IP client da request)
+      - userid
+      - user agent
     E appende la stessa riga su un file locale giornaliero: var/auth_login_YYYYMMDD.log
     """
     try:
         ts = rfc3339_utc()
         ip_client = _client_ip_from_request(request) or "-"
-
+        user_agent  = request.get("HTTP_USER_AGENT", "-")
+        
         # SOLO i 3 attributi richiesti
         sd_params = {
             "timestamp": ts,
             "tipo_evento": tipo_evento,
             "indirizzo_sorgente": ip_client,
+            "userid": userid,
+            "user_agent": user_agent
         }
 
         # RFC5424 body (SENZA <PRI>): VERSION TIMESTAMP HOSTNAME APP-NAME PROCID MSGID [SD] MSG
@@ -103,7 +108,7 @@ def send_login_event(tipo_evento, request):
         hostname = socket.gethostname().split(".")[0] or "host"
         procid   = str(os.getpid())
         sd       = build_structured_data(SD_ID, sd_params)
-        msg      = "-"
+        msg      = message
 
         body = "%s %s %s %s %s %s %s %s" % (
             version, ts, hostname, APP_NAME, procid, MSGID, sd, msg

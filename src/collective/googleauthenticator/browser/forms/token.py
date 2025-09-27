@@ -77,13 +77,13 @@ class TokenForm(form.SchemaForm):
 
         data, errors = self.extractData()
         if errors:
+            send_login_event(tipo_evento=u"LOGIN_FAILED", userid="-", request=self.request, message="ERRORE")
             return False
 
         token = data.get('token', '')
 
         user = None
         username = self.request.get('auth_user', '')
-
         if username:
             user = api.user.get(username=username)
 
@@ -93,10 +93,10 @@ class TokenForm(form.SchemaForm):
                 request=self.request, user=user)
 
             if not user_data_validation_result.result:
-                IStatusMessage(self.request).addStatusMessage(
-                    _("Invalid data. Details: {0}".format(' '.join(
-                        user_data_validation_result.reason))), 'error')
-                send_login_event(u"LOGIN_FAILED", request=self.request)
+                msg = _("Invalid data. Details: {0}".format(' '.join(
+                        user_data_validation_result.reason)))
+                IStatusMessage(self.request).addStatusMessage(msg, 'error')
+                send_login_event(tipo_evento=u"LOGIN_FAILED", userid=username, request=self.request, message=msg)
                 return
 
         valid_token = validate_token(token, user=user)
@@ -110,7 +110,7 @@ class TokenForm(form.SchemaForm):
             # TODO: Is there a nicer way of resolving the
             # "@@google_authenticator_token_form" URL?
             msg = PMF("Welcome! You are now logged in.")
-            send_login_event(u"LOGIN", request=self.request)
+            send_login_event(tipo_evento=u"LOGIN", userid=username, request=self.request, message='OK')
             IStatusMessage(self.request).addStatusMessage(msg, 'info')
             request_data = extract_request_data(self.request)
             context_url = self.context.absolute_url()
@@ -119,6 +119,8 @@ class TokenForm(form.SchemaForm):
         else:
             msg = _("Invalid token or token expired.")
             IStatusMessage(self.request).addStatusMessage(msg, 'error')
+            send_login_event(tipo_evento=u"LOGIN_FAILED", userid=username, request=self.request, message=msg)
+
 
     def updateFields(self, *args, **kwargs):
         """
