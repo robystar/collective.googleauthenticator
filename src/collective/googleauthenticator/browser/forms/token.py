@@ -99,7 +99,11 @@ class TokenForm(form.SchemaForm):
                 send_login_event(tipo_evento=u"LOGIN_FAILED", userid=username, request=self.request, message=msg)
                 return
 
-        valid_token = validate_token(token, user=user)
+        try:
+            valid_token = validate_token(token, user=user)
+        except:
+            send_login_event(tipo_evento=u"LOGIN_FAILED", userid=username, request=self.request, message="ERRORE")
+            return False
 
         # self.context.plone_log(valid_token)
         # self.context.plone_log(token)
