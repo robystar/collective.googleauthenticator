@@ -54,14 +54,14 @@ def _daily_file_path(prefix):
     Path giornaliero nella cartella 'var' sotto la cwd del processo:
     <cwd>/var/<prefix>_YYYYMMDD.log
     """
-    base_dir = os.path.join(os.getcwd(), "var")
+    base_dir = os.path.join(os.environ.get("ZOPE_HOME", os.getcwd()),"audit_logging")
     if not os.path.isdir(base_dir):
         try:
             os.makedirs(base_dir)
         except Exception:
             pass
     day = datetime.utcnow().strftime("%Y%m%d")
-    return os.path.join(base_dir, "siem_%s_%s.log" % (prefix, day))
+    return os.path.join(base_dir, "%s_%s.log" % (prefix, day))
 
 
 # ===== logger syslog dedicato (configurato UNA volta) =====
