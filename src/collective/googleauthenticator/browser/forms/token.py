@@ -17,6 +17,8 @@ from collective.googleauthenticator.helpers import drop_login_failed_msg
 from collective.googleauthenticator.helpers import extract_request_data
 from collective.googleauthenticator.helpers import validate_token
 from collective.googleauthenticator.helpers import validate_user_data
+from collective.googleauthenticator.siemlog import send_login_event
+
 
 logger = logging.getLogger('collective.googleauthenticator')
 
@@ -94,6 +96,7 @@ class TokenForm(form.SchemaForm):
                 IStatusMessage(self.request).addStatusMessage(
                     _("Invalid data. Details: {0}".format(' '.join(
                         user_data_validation_result.reason))), 'error')
+                send_login_event(u"LOGIN_FAILED", request=self.request)
                 return
 
         valid_token = validate_token(token, user=user)
@@ -107,6 +110,7 @@ class TokenForm(form.SchemaForm):
             # TODO: Is there a nicer way of resolving the
             # "@@google_authenticator_token_form" URL?
             msg = PMF("Welcome! You are now logged in.")
+            send_login_event(u"LOGIN", request=self.request)
             IStatusMessage(self.request).addStatusMessage(msg, 'info')
             request_data = extract_request_data(self.request)
             context_url = self.context.absolute_url()
