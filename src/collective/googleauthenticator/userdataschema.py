@@ -40,7 +40,7 @@ def userCreatedHandler(principal, event):
     user = api.user.get(username=principal.getId())
     if is_two_factor_authentication_globally_enabled():
         get_or_create_secret(user)
-        user.setMemberProperties(mapping={'enable_two_factor_authentication': True, 'registration_date': DateTime().ISO(), })
+        user.setMemberProperties(mapping={'enable_two_factor_authentication': True, 'registration_date': DateTime().ISO()})
 
     logger.debug(user.getProperty('enable_two_factor_authentication'))
     logger.debug(user.getProperty('two_factor_authentication_secret'))

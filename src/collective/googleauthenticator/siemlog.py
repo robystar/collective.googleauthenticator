@@ -13,7 +13,7 @@ SIEM_PORT = 514  # UDP
 APP_NAME  = "sottoservizi.gruppoiren.it"
 SD_ID     = "gwAuth"            # OK senza PEN
 MSGID     = "LOGIN"             # coerente con il tipo messaggio
-LOGGER_NAME = "siem-rfc5424"    # logger dedicato
+LOGGER_NAME = "siem-rfc5424"
 # ============================================
 
 
@@ -33,31 +33,16 @@ def build_structured_data(sd_id, params):
     return "[%s %s]" % (sd_id, pairs) if pairs else "[%s]" % sd_id
 
 
-def get_outbound_ip(dst_host, dst_port):
-    """
-    IP realmente usato in uscita verso il SIEM (fallback se manca XFF/REMOTE_ADDR).
-    """
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        s.connect((dst_host, dst_port))
-        return s.getsockname()[0]
-    except Exception:
-        try:
-            return socket.gethostbyname(socket.gethostname())
-        except Exception:
-            return None
-    finally:
-        s.close()
-
-
 def _client_ip_from_request(req):
     """
     IP sorgente dalla request Plone/Zope:
-    - primo X-Forwarded-For, altrimenti REMOTE_ADDR
+    - prende il PRIMO IP in X-Forwarded-For (client reale)
+    - altrimenti usa REMOTE_ADDR
     """
     try:
         xff = req.get("HTTP_X_FORWARDED_FOR")
         if xff:
+            # XFF può contenere "client, proxy1, proxy2"
             return xff.split(",")[0].strip()
         return req.get("REMOTE_ADDR")
     except Exception:
@@ -66,8 +51,8 @@ def _client_ip_from_request(req):
 
 def _daily_file_path(prefix):
     """
-    Path giornaliero nella cartella 'var' sotto la cwd del processo.
-    Esempio: <cwd>/var/auth_login_YYYYMMDD.log
+    Path giornaliero nella cartella 'var' sotto la cwd del processo:
+    <cwd>/var/<prefix>_YYYYMMDD.log
     """
     base_dir = os.path.join(os.getcwd(), "var")
     if not os.path.isdir(base_dir):
@@ -76,7 +61,7 @@ def _daily_file_path(prefix):
         except Exception:
             pass
     day = datetime.utcnow().strftime("%Y%m%d")
-    return os.path.join(base_dir, "%s_%s.log" % (prefix, day))
+    return os.path.join(base_dir, "siem_%s_%s.log" % (prefix, day))
 
 
 # ===== logger syslog dedicato (configurato UNA volta) =====
@@ -94,21 +79,17 @@ if not _logger.handlers:
 # ==========================================================
 
 
-def send_login_event(tipo_evento, request=None):
+def send_login_event(tipo_evento, request):
     """
     Invia un evento RFC 5424 (UDP/514) con gli attributi MINIMI richiesti:
       - timestamp
-      - tipo_evento (es. "LOGIN" o "LOGIN_FAILED")
-      - indirizzo_sorgente (IP client)
+      - tipo_evento ("LOGIN" o "LOGIN_FAILED")
+      - indirizzo_sorgente (IP client da request)
     E appende la stessa riga su un file locale giornaliero: var/auth_login_YYYYMMDD.log
-
-    :param tipo_evento: u"LOGIN" / u"LOGIN_FAILED"
-    :param request: (opzionale) self.request per leggere l'IP client
-    :return: True/False
     """
     try:
         ts = rfc3339_utc()
-        ip_client = _client_ip_from_request(request) or get_outbound_ip(SIEM_HOST, SIEM_PORT) or "-"
+        ip_client = _client_ip_from_request(request) or "-"
 
         # SOLO i 3 attributi richiesti
         sd_params = {
@@ -129,10 +110,10 @@ def send_login_event(tipo_evento, request=None):
         )
 
         # ===== INVIO REALE =====
-        _logger.info(body)  # SysLogHandler aggiunge automaticamente <PRI> e fa l'invio UDP
+        _logger.info(body)  # SysLogHandler manda il datagramma UDP e aggiunge <PRI>
         # =======================
 
-        # Scrittura locale (stessa riga con PRI esplicito per completezza)
+        # Scrittura locale (stessa riga con PRI esplicito per immediatezza)
         try:
             pri = "<134>"  # local0.info (16*8 + 6)
             wire = (pri + body).encode("utf-8")

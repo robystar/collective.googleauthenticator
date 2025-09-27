@@ -122,7 +122,8 @@ def get_barcode_image(username, domain, secret):
         'cht': 'qr',
         'chl': "otpauth://totp/{0}@{1}?secret={2}".format(
             username, domain, secret)})
-    url = "https://chart.googleapis.com/chart?{0}".format(params)
+    #url = "https://chart.googleapis.com/chart?{0}".format(params)
+    url = "qr-code?{0}".format(params)
     return url
 
 
